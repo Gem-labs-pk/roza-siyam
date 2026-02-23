@@ -8,7 +8,7 @@ const ramadanData = [
   { day: 2, date: "2026-02-20", sehr: "05:26", iftar: "06:22" },
   { day: 3, date: "2026-02-21", sehr: "05:25", iftar: "06:23" },
   { day: 4, date: "2026-02-22", upperDate: "22", month: "Feb", dayName: "Sun", sehr: "05:24", iftar: "06:24" },
-  { day: 5, date: "2026-02-23", sehr: "05:23", iftar: "06:25" },
+  { day: 5, date: "2026-02-23", sehr: "05:23", iftar: "06:15" },
   { day: 6, date: "2026-02-24", sehr: "05:22", iftar: "06:25" },
   { day: 7, date: "2026-02-25", sehr: "05:22", iftar: "06:26" },
   { day: 8, date: "2026-02-26", sehr: "05:21", iftar: "06:27" },
