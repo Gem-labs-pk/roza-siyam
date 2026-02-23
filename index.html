@@ -1,13 +1,421 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>roza-siyam</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Roza Siyam</title>
+  
+  <!-- Load Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <style>
+    /* Global Styles & Utilities */
+    body {
+      background-color: #020617; /* slate-950 */
+      color: #f1f5f9; /* slate-100 */
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    
+    ::selection {
+      background-color: rgba(245, 158, 11, 0.3); /* amber-500/30 */
+    }
+
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .hide-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .pb-safe {
+      padding-bottom: env(safe-area-inset-bottom, 1rem);
+    }
+
+    /* Simple animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in {
+      animation: fadeIn 0.5s ease-out forwards;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Mobile App Container -->
+  <div class="w-full max-w-md bg-slate-900 shadow-2xl relative flex flex-col h-screen overflow-hidden sm:rounded-3xl sm:h-[95vh] sm:my-auto sm:border sm:border-slate-800">
+    
+    <!-- Header -->
+    <header class="px-6 pt-10 pb-6 bg-gradient-to-b from-slate-800/80 to-slate-900 flex items-center gap-4 relative z-10">
+      <svg viewBox="0 0 100 100" class="w-12 h-12 drop-shadow-lg" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="moonGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#fde047" />
+            <stop offset="100%" stopColor="#d97706" />
+          </linearGradient>
+        </defs>
+        <path d="M50 15A35 35 0 1 0 85 50 25 25 0 1 1 50 15Z" fill="url(#moonGradient)" />
+        <polygon points="65,25 68,32 75,32 69,37 71,44 65,40 59,44 61,37 55,32 62,32" fill="#fde047" />
+      </svg>
+      <div>
+        <h1 class="text-2xl font-bold tracking-wide text-white">Roza Siyam</h1>
+        <p class="text-amber-400 text-sm font-medium tracking-wider">Ramadan 2026 • 1447 AH</p>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto pb-24 px-6 hide-scrollbar relative">
+      
+      <!-- HOME TAB -->
+      <div id="tab-home" class="space-y-6 animate-fade-in">
+        
+        <!-- Current Date Card -->
+        <div class="bg-slate-800/50 border border-slate-700/50 rounded-2xl p-5 text-center">
+          <p class="text-slate-400 text-sm uppercase tracking-widest mb-1">Today</p>
+          <p id="display-date" class="text-lg text-slate-200 font-medium">Loading Date...</p>
+          <div id="roza-badge-container" class="hidden mt-3">
+            <div id="roza-badge" class="inline-block bg-amber-500/20 text-amber-300 px-4 py-1.5 rounded-full text-sm font-semibold shadow-inner">
+              Roza --
+            </div>
+          </div>
+        </div>
+
+        <!-- Dynamic Countdown Section -->
+        <div class="bg-gradient-to-br from-amber-600/20 to-orange-600/10 border border-amber-500/20 rounded-3xl p-8 flex flex-col items-center justify-center relative overflow-hidden shadow-lg shadow-amber-900/10 min-h-[220px]">
+          <div class="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-3xl"></div>
+          
+          <!-- View: Loading -->
+          <div id="view-loading" class="text-amber-200 animate-pulse text-center w-full">Calculating timings...</div>
+
+          <!-- View: Before Ramadan -->
+          <div id="view-before" class="hidden text-center w-full">
+            <svg class="w-12 h-12 mx-auto text-amber-400 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+            </svg>
+            <h2 class="text-2xl font-bold text-white mb-2">Ramadan is coming</h2>
+            <p class="text-amber-200/70">Starts Feb 19, 2026</p>
+          </div>
+
+          <!-- View: After Ramadan -->
+          <div id="view-after" class="hidden text-center w-full">
+            <h2 class="text-2xl font-bold text-white mb-2">Eid Mubarak!</h2>
+            <p class="text-amber-200/70">May your fasting be accepted.</p>
+          </div>
+
+          <!-- View: During Ramadan (Countdown) -->
+          <div id="view-during" class="hidden w-full flex flex-col items-center">
+            <p id="event-label" class="text-amber-300 font-medium uppercase tracking-widest mb-6">Event in</p>
+            <div class="flex items-center justify-center gap-3 font-mono text-5xl font-light text-white tracking-tight">
+              <div class="flex flex-col items-center">
+                <span id="countdown-h" class="bg-slate-950/40 px-4 py-3 rounded-2xl backdrop-blur-sm min-w-[80px] text-center shadow-inner border border-slate-700/30">00</span>
+                <span class="text-xs font-sans text-amber-400/60 mt-2 uppercase tracking-widest">Hrs</span>
+              </div>
+              <span class="text-amber-500 pb-6">:</span>
+              <div class="flex flex-col items-center">
+                <span id="countdown-m" class="bg-slate-950/40 px-4 py-3 rounded-2xl backdrop-blur-sm min-w-[80px] text-center shadow-inner border border-slate-700/30">00</span>
+                <span class="text-xs font-sans text-amber-400/60 mt-2 uppercase tracking-widest">Min</span>
+              </div>
+              <span class="text-amber-500 pb-6">:</span>
+              <div class="flex flex-col items-center">
+                <span id="countdown-s" class="bg-slate-950/40 px-4 py-3 rounded-2xl backdrop-blur-sm min-w-[80px] text-center shadow-inner border border-slate-700/30 text-amber-400">00</span>
+                <span class="text-xs font-sans text-amber-400/60 mt-2 uppercase tracking-widest">Sec</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Today's Timings Grid -->
+        <div id="today-grid" class="hidden grid grid-cols-2 gap-4">
+          <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 flex flex-col items-center relative overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent"></div>
+            <svg class="w-8 h-8 text-indigo-400 mb-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+            </svg>
+            <p class="text-slate-400 text-sm font-medium">Sehri Ends</p>
+            <p class="text-2xl font-semibold text-white mt-1"><span id="sehr-time-display">--:--</span> <span class="text-sm font-normal text-slate-500">AM</span></p>
+          </div>
+          
+          <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 flex flex-col items-center relative overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-br from-orange-500/5 to-transparent"></div>
+            <svg class="w-8 h-8 text-orange-400 mb-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+            <p class="text-slate-400 text-sm font-medium">Iftar Time</p>
+            <p class="text-2xl font-semibold text-white mt-1"><span id="iftar-time-display">--:--</span> <span class="text-sm font-normal text-slate-500">PM</span></p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- TIMETABLE TAB -->
+      <div id="tab-timetable" class="hidden animate-fade-in">
+        <div class="sticky top-0 bg-slate-900/95 backdrop-blur-md z-10 py-4 border-b border-slate-800 mb-4 flex justify-between text-xs font-semibold uppercase tracking-wider text-slate-400">
+          <span>Roza & Date</span>
+          <span class="flex gap-8 pr-2">
+            <span>Sehr</span>
+            <span>Iftar</span>
+          </span>
+        </div>
+        <div id="timetable-list" class="space-y-3">
+          <!-- Populated by JavaScript -->
+        </div>
+      </div>
+
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="absolute bottom-0 w-full bg-slate-900/90 backdrop-blur-xl border-t border-slate-800/80 px-6 py-4 flex justify-around pb-safe">
+      <button id="nav-home" onclick="switchTab('home')" class="flex flex-col items-center gap-1.5 transition-colors text-amber-400">
+        <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+        </svg>
+        <span class="text-xs font-medium">Home</span>
+      </button>
+      
+      <button id="nav-timetable" onclick="switchTab('timetable')" class="flex flex-col items-center gap-1.5 transition-colors text-slate-500 hover:text-slate-300">
+        <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+        <span class="text-xs font-medium">Timetable</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- Application Logic -->
+  <script>
+    const ramadanData = [
+      { day: 1, date: "2026-02-19", sehr: "05:27", iftar: "06:22" },
+      { day: 2, date: "2026-02-20", sehr: "05:26", iftar: "06:22" },
+      { day: 3, date: "2026-02-21", sehr: "05:25", iftar: "06:23" },
+      { day: 4, date: "2026-02-22", sehr: "05:24", iftar: "06:24" },
+      { day: 5, date: "2026-02-23", sehr: "05:23", iftar: "06:25" },
+      { day: 6, date: "2026-02-24", sehr: "05:22", iftar: "06:25" },
+      { day: 7, date: "2026-02-25", sehr: "05:22", iftar: "06:26" },
+      { day: 8, date: "2026-02-26", sehr: "05:21", iftar: "06:27" },
+      { day: 9, date: "2026-02-27", sehr: "05:20", iftar: "06:27" },
+      { day: 10, date: "2026-02-28", sehr: "05:19", iftar: "06:28" },
+      { day: 11, date: "2026-03-01", sehr: "05:18", iftar: "06:29" },
+      { day: 12, date: "2026-03-02", sehr: "05:18", iftar: "06:29" },
+      { day: 13, date: "2026-03-03", sehr: "05:17", iftar: "06:30" },
+      { day: 14, date: "2026-03-04", sehr: "05:16", iftar: "06:30" },
+      { day: 15, date: "2026-03-05", sehr: "05:15", iftar: "06:31" },
+      { day: 16, date: "2026-03-06", sehr: "05:14", iftar: "06:31" },
+      { day: 17, date: "2026-03-07", sehr: "05:13", iftar: "06:32" },
+      { day: 18, date: "2026-03-08", sehr: "05:12", iftar: "06:33" },
+      { day: 19, date: "2026-03-09", sehr: "05:11", iftar: "06:33" },
+      { day: 20, date: "2026-03-10", sehr: "05:10", iftar: "06:34" },
+      { day: 21, date: "2026-03-11", sehr: "05:08", iftar: "06:35" },
+      { day: 22, date: "2026-03-12", sehr: "05:07", iftar: "06:36" },
+      { day: 23, date: "2026-03-13", sehr: "05:06", iftar: "06:36" },
+      { day: 24, date: "2026-03-14", sehr: "05:05", iftar: "06:37" },
+      { day: 25, date: "2026-03-15", sehr: "05:04", iftar: "06:38" },
+      { day: 26, date: "2026-03-16", sehr: "05:02", iftar: "06:38" },
+      { day: 27, date: "2026-03-17", sehr: "05:01", iftar: "06:39" },
+      { day: 28, date: "2026-03-18", sehr: "05:00", iftar: "06:39" },
+      { day: 29, date: "2026-03-19", sehr: "04:58", iftar: "06:40" },
+      { day: 30, date: "2026-03-20", sehr: "04:56", iftar: "06:40" },
+    ];
+
+    // DOM Elements
+    const views = {
+      loading: document.getElementById('view-loading'),
+      before: document.getElementById('view-before'),
+      after: document.getElementById('view-after'),
+      during: document.getElementById('view-during')
+    };
+
+    const els = {
+      displayDate: document.getElementById('display-date'),
+      rozaBadgeContainer: document.getElementById('roza-badge-container'),
+      rozaBadge: document.getElementById('roza-badge'),
+      eventLabel: document.getElementById('event-label'),
+      countH: document.getElementById('countdown-h'),
+      countM: document.getElementById('countdown-m'),
+      countS: document.getElementById('countdown-s'),
+      todayGrid: document.getElementById('today-grid'),
+      sehrTime: document.getElementById('sehr-time-display'),
+      iftarTime: document.getElementById('iftar-time-display'),
+      timetableList: document.getElementById('timetable-list')
+    };
+
+    // Parse time strings to Date objects
+    function parseTimeStr(dateStr, timeStr, isIftar) {
+      const parts = timeStr.split(':');
+      const hours = parseInt(parts[0], 10);
+      const mins = parseInt(parts[1], 10);
+      const adjustedHours = isIftar ? hours + 12 : hours; // Iftar is PM, Sehr is AM
+      return new Date(`${dateStr}T${String(adjustedHours).padStart(2, '0')}:${String(mins).padStart(2, '0')}:00`);
+    }
+
+    function formatDisplayDate(date) {
+      return date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+    }
+
+    function padZero(num) {
+      return String(num).padStart(2, '0');
+    }
+
+    function setView(viewName) {
+      Object.keys(views).forEach(key => {
+        if (key === viewName) {
+          views[key].classList.remove('hidden');
+        } else {
+          views[key].classList.add('hidden');
+        }
+      });
+    }
+
+    // Render Timetable
+    function renderTimetable(currentDayNumber) {
+      let html = '';
+      ramadanData.forEach(dayData => {
+        const isToday = currentDayNumber === dayData.day;
+        const dateObj = new Date(`${dayData.date}T00:00:00`);
+        const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        
+        const containerClasses = isToday 
+          ? 'bg-amber-950/30 border-amber-500/50 shadow-[0_0_15px_rgba(245,158,11,0.1)]' 
+          : 'bg-slate-800/40 border-slate-700/50 hover:bg-slate-800';
+          
+        const circleClasses = isToday ? 'bg-amber-500 text-slate-900' : 'bg-slate-700 text-slate-300';
+        const textClasses = isToday ? 'text-amber-400' : 'text-slate-200';
+        const timeClasses = isToday ? 'text-white font-semibold' : 'text-slate-300';
+
+        html += `
+          <div class="flex items-center justify-between p-4 rounded-2xl border transition-all ${containerClasses}">
+            <div class="flex items-center gap-4">
+              <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold ${circleClasses}">
+                ${dayData.day}
+              </div>
+              <div>
+                <p class="font-medium ${textClasses}">${formattedDate}</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-6 font-mono text-sm">
+              <div class="flex flex-col items-end">
+                <span class="${timeClasses}">${dayData.sehr}</span>
+              </div>
+              <div class="flex flex-col items-end">
+                <span class="${timeClasses}">${dayData.iftar}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+      els.timetableList.innerHTML = html;
+    }
+
+    // Core Timer Logic
+    function updateTimer() {
+      const now = new Date();
+      els.displayDate.innerText = formatDisplayDate(now);
+
+      const firstDayDate = new Date(`${ramadanData[0].date}T00:00:00`);
+      const lastDayDate = new Date(`${ramadanData[ramadanData.length - 1].date}T23:59:59`);
+
+      if (now < firstDayDate) {
+        setView('before');
+        renderTimetable(null);
+        return;
+      }
+
+      if (now > lastDayDate) {
+        setView('after');
+        renderTimetable(null);
+        return;
+      }
+
+      // Find current day based on local date
+      const todayStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+      let todayDataIndex = ramadanData.findIndex(d => d.date === todayStr);
+
+      if (todayDataIndex === -1) {
+        setView('after');
+        return;
+      }
+
+      const todayData = ramadanData[todayDataIndex];
+      const sehrTime = parseTimeStr(todayData.date, todayData.sehr, false);
+      const iftarTime = parseTimeStr(todayData.date, todayData.iftar, true);
+
+      // Update UI elements for today
+      els.rozaBadgeContainer.classList.remove('hidden');
+      els.rozaBadge.innerText = `Roza ${todayData.day}`;
+      els.todayGrid.classList.remove('hidden');
+      els.sehrTime.innerText = todayData.sehr;
+      els.iftarTime.innerText = todayData.iftar;
+
+      let nextEvent = null;
+
+      if (now < sehrTime) {
+        nextEvent = { time: sehrTime, label: 'Sehr Ends In' };
+      } else if (now < iftarTime) {
+        nextEvent = { time: iftarTime, label: 'Iftar Begins In' };
+      } else {
+        // Look for tomorrow
+        if (todayDataIndex + 1 < ramadanData.length) {
+          const tomorrowData = ramadanData[todayDataIndex + 1];
+          const tmrwSehrTime = parseTimeStr(tomorrowData.date, tomorrowData.sehr, false);
+          nextEvent = { time: tmrwSehrTime, label: 'Next Sehr In' };
+        } else {
+          setView('after');
+          return;
+        }
+      }
+
+      // Calculate Difference
+      const diffMs = nextEvent.time - now;
+      const h = Math.floor((diffMs / (1000 * 60 * 60)) % 24);
+      const m = Math.floor((diffMs / 1000 / 60) % 60);
+      const s = Math.floor((diffMs / 1000) % 60);
+
+      // Render countdown
+      setView('during');
+      els.eventLabel.innerText = nextEvent.label;
+      els.countH.innerText = padZero(h);
+      els.countM.innerText = padZero(m);
+      els.countS.innerText = padZero(s);
+
+      renderTimetable(todayData.day);
+    }
+
+    // Tab Navigation Logic
+    function switchTab(tabId) {
+      const tabHome = document.getElementById('tab-home');
+      const tabTimetable = document.getElementById('tab-timetable');
+      const navHome = document.getElementById('nav-home');
+      const navTimetable = document.getElementById('nav-timetable');
+
+      if (tabId === 'home') {
+        tabHome.classList.remove('hidden');
+        tabTimetable.classList.add('hidden');
+        
+        navHome.classList.add('text-amber-400');
+        navHome.classList.remove('text-slate-500', 'hover:text-slate-300');
+        
+        navTimetable.classList.remove('text-amber-400');
+        navTimetable.classList.add('text-slate-500', 'hover:text-slate-300');
+      } else {
+        tabHome.classList.add('hidden');
+        tabTimetable.classList.remove('hidden');
+        
+        navTimetable.classList.add('text-amber-400');
+        navTimetable.classList.remove('text-slate-500', 'hover:text-slate-300');
+        
+        navHome.classList.remove('text-amber-400');
+        navHome.classList.add('text-slate-500', 'hover:text-slate-300');
+      }
+    }
+
+    // Initialize Timer
+    updateTimer();
+    setInterval(updateTimer, 1000);
+
+  </script>
+</body>
 </html>
