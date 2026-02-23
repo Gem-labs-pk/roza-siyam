@@ -5,6 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Roza Siyam</title>
   
+  <!-- PWA Meta Tags -->
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#0f172a"> <!-- Matched to your slate-900 background -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Roza Siyam">
+  <link rel="apple-touch-icon" href="./icon.svg">
+  
   <!-- Load Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   
@@ -191,6 +199,14 @@
       </div>
 
     </main>
+
+    <!-- Install Button (Styled for your theme and placed above bottom nav) -->
+    <button id="install-btn" style="display: none; position: absolute; bottom: 90px; right: 20px; z-index: 50; padding: 10px 20px; background-color: #f59e0b; color: #0f172a; border: none; border-radius: 9999px; cursor: pointer; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3); font-weight: bold; align-items: center; gap: 8px;">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+        </svg>
+        Install App
+    </button>
 
     <!-- Bottom Navigation -->
     <nav class="absolute bottom-0 w-full bg-slate-900/90 backdrop-blur-xl border-t border-slate-800/80 px-6 py-4 flex justify-around pb-safe z-40">
@@ -539,6 +555,56 @@
 
     // Start App when DOM is loaded
     document.addEventListener('DOMContentLoaded', initApp);
+
+    // ==========================================
+    // PWA REGISTRATION AND INSTALL LOGIC
+    // ==========================================
+
+    // 1. Register Service Worker
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js')
+                .then(reg => console.log('Service Worker Registered.'))
+                .catch(err => console.log('Service Worker Registration Failed.', err));
+        });
+    }
+
+    // 2. Handle Install Prompt & Button
+    let deferredPrompt;
+    const installBtn = document.getElementById('install-btn');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        // Prevent the mini-infobar from appearing on mobile
+        e.preventDefault();
+        // Stash the event so it can be triggered later.
+        deferredPrompt = e;
+        // Update UI notify the user they can install the PWA
+        if (installBtn) installBtn.style.display = 'flex';
+    });
+
+    if (installBtn) {
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                // Show the install prompt
+                deferredPrompt.prompt();
+                // Wait for the user to respond to the prompt
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log(`User ${outcome} the install prompt`);
+                // We've used the prompt, and can't use it again, throw it away
+                deferredPrompt = null;
+                // Hide the install button
+                installBtn.style.display = 'none';
+            }
+        });
+    }
+
+    window.addEventListener('appinstalled', () => {
+        // Hide the app-provided install promotion
+        if (installBtn) installBtn.style.display = 'none';
+        // Clear the deferredPrompt so it can be garbage collected
+        deferredPrompt = null;
+        console.log('App was successfully installed');
+    });
 
   </script>
 </body>
