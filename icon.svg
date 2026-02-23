@@ -1,0 +1,10 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="moonGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stopColor="#fde047" />
+      <stop offset="100%" stopColor="#d97706" />
+    </linearGradient>
+  </defs>
+  <path d="M50 15A35 35 0 1 0 85 50 25 25 0 1 1 50 15Z" fill="url(#moonGradient)" />
+  <polygon points="65,25 68,32 75,32 69,37 71,44 65,40 59,44 61,37 55,32 62,32" fill="#fde047" />
+</svg>

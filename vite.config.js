@@ -4,5 +4,5 @@ import react from '@vitejs/plugin-react'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: "/roza-siyam/", // MAKE SURE THIS MATCHES YOUR EXACT GITHUB REPOSITORY NAME
+  base: "/roza-siyam/",
 })
