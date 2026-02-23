@@ -109,7 +109,9 @@
 
           <!-- View: During Ramadan (Countdown) -->
           <div id="view-during" class="hidden w-full flex flex-col items-center">
-            <p id="event-label" class="text-amber-300 font-medium uppercase tracking-widest mb-6">Event in</p>
+            <p id="event-label" class="text-amber-300 font-medium uppercase tracking-widest mb-1">Event in</p>
+            <p id="event-sublabel" class="text-amber-200/60 text-xs tracking-wider mb-5">At --:--</p>
+            
             <div class="flex items-center justify-center gap-3 font-mono text-5xl font-light text-white tracking-tight">
               <div class="flex flex-col items-center">
                 <span id="countdown-h" class="bg-slate-950/40 px-4 py-3 rounded-2xl backdrop-blur-sm min-w-[80px] text-center shadow-inner border border-slate-700/30">00</span>
@@ -129,7 +131,7 @@
           </div>
         </div>
 
-        <!-- Today's Timings Grid -->
+        <!-- Target Day Timings Grid -->
         <div id="today-grid" class="hidden grid grid-cols-2 gap-4">
           <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 flex flex-col items-center relative overflow-hidden">
             <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent"></div>
@@ -188,37 +190,38 @@
 
   <!-- Application Logic -->
   <script>
+    // Updated data: Sehr from 05:27 column, Iftar from 06:12 column
     const ramadanData = [
-      { day: 1, date: "2026-02-19", sehr: "05:27", iftar: "06:22" },
-      { day: 2, date: "2026-02-20", sehr: "05:26", iftar: "06:22" },
-      { day: 3, date: "2026-02-21", sehr: "05:25", iftar: "06:23" },
-      { day: 4, date: "2026-02-22", sehr: "05:24", iftar: "06:24" },
-      { day: 5, date: "2026-02-23", sehr: "05:23", iftar: "06:25" },
-      { day: 6, date: "2026-02-24", sehr: "05:22", iftar: "06:25" },
-      { day: 7, date: "2026-02-25", sehr: "05:22", iftar: "06:26" },
-      { day: 8, date: "2026-02-26", sehr: "05:21", iftar: "06:27" },
-      { day: 9, date: "2026-02-27", sehr: "05:20", iftar: "06:27" },
-      { day: 10, date: "2026-02-28", sehr: "05:19", iftar: "06:28" },
-      { day: 11, date: "2026-03-01", sehr: "05:18", iftar: "06:29" },
-      { day: 12, date: "2026-03-02", sehr: "05:18", iftar: "06:29" },
-      { day: 13, date: "2026-03-03", sehr: "05:17", iftar: "06:30" },
-      { day: 14, date: "2026-03-04", sehr: "05:16", iftar: "06:30" },
-      { day: 15, date: "2026-03-05", sehr: "05:15", iftar: "06:31" },
-      { day: 16, date: "2026-03-06", sehr: "05:14", iftar: "06:31" },
-      { day: 17, date: "2026-03-07", sehr: "05:13", iftar: "06:32" },
-      { day: 18, date: "2026-03-08", sehr: "05:12", iftar: "06:33" },
-      { day: 19, date: "2026-03-09", sehr: "05:11", iftar: "06:33" },
-      { day: 20, date: "2026-03-10", sehr: "05:10", iftar: "06:34" },
-      { day: 21, date: "2026-03-11", sehr: "05:08", iftar: "06:35" },
-      { day: 22, date: "2026-03-12", sehr: "05:07", iftar: "06:36" },
-      { day: 23, date: "2026-03-13", sehr: "05:06", iftar: "06:36" },
-      { day: 24, date: "2026-03-14", sehr: "05:05", iftar: "06:37" },
-      { day: 25, date: "2026-03-15", sehr: "05:04", iftar: "06:38" },
-      { day: 26, date: "2026-03-16", sehr: "05:02", iftar: "06:38" },
-      { day: 27, date: "2026-03-17", sehr: "05:01", iftar: "06:39" },
-      { day: 28, date: "2026-03-18", sehr: "05:00", iftar: "06:39" },
-      { day: 29, date: "2026-03-19", sehr: "04:58", iftar: "06:40" },
-      { day: 30, date: "2026-03-20", sehr: "04:56", iftar: "06:40" },
+      { day: 1, date: "2026-02-19", sehr: "05:27", iftar: "06:12" },
+      { day: 2, date: "2026-02-20", sehr: "05:26", iftar: "06:12" },
+      { day: 3, date: "2026-02-21", sehr: "05:25", iftar: "06:13" },
+      { day: 4, date: "2026-02-22", sehr: "05:24", iftar: "06:14" },
+      { day: 5, date: "2026-02-23", sehr: "05:23", iftar: "06:15" },
+      { day: 6, date: "2026-02-24", sehr: "05:22", iftar: "06:15" },
+      { day: 7, date: "2026-02-25", sehr: "05:22", iftar: "06:16" },
+      { day: 8, date: "2026-02-26", sehr: "05:21", iftar: "06:17" },
+      { day: 9, date: "2026-02-27", sehr: "05:20", iftar: "06:17" },
+      { day: 10, date: "2026-02-28", sehr: "05:19", iftar: "06:18" },
+      { day: 11, date: "2026-03-01", sehr: "05:18", iftar: "06:19" },
+      { day: 12, date: "2026-03-02", sehr: "05:18", iftar: "06:19" },
+      { day: 13, date: "2026-03-03", sehr: "05:17", iftar: "06:20" },
+      { day: 14, date: "2026-03-04", sehr: "05:16", iftar: "06:20" },
+      { day: 15, date: "2026-03-05", sehr: "05:15", iftar: "06:21" },
+      { day: 16, date: "2026-03-06", shortMonth: "Mar", plainDay: "06", sehr: "05:14", iftar: "06:21" },
+      { day: 17, date: "2026-03-07", sehr: "05:13", iftar: "06:22" },
+      { day: 18, date: "2026-03-08", sehr: "05:12", iftar: "06:23" },
+      { day: 19, date: "2026-03-09", sehr: "05:11", iftar: "06:23" },
+      { day: 20, date: "2026-03-10", sehr: "05:10", iftar: "06:24" },
+      { day: 21, date: "2026-03-11", sehr: "05:08", iftar: "06:25" },
+      { day: 22, date: "2026-03-12", sehr: "05:07", iftar: "06:26" },
+      { day: 23, date: "2026-03-13", sehr: "05:06", iftar: "06:26" },
+      { day: 24, date: "2026-03-14", sehr: "05:05", iftar: "06:27" },
+      { day: 25, date: "2026-03-15", sehr: "05:04", iftar: "06:28" },
+      { day: 26, date: "2026-03-16", sehr: "05:02", iftar: "06:28" },
+      { day: 27, date: "2026-03-17", sehr: "05:01", iftar: "06:29" },
+      { day: 28, date: "2026-03-18", sehr: "05:00", iftar: "06:29" },
+      { day: 29, date: "2026-03-19", sehr: "04:58", iftar: "06:30" },
+      { day: 30, date: "2026-03-20", sehr: "04:56", iftar: "06:30" },
     ];
 
     // DOM Elements
@@ -234,6 +237,7 @@
       rozaBadgeContainer: document.getElementById('roza-badge-container'),
       rozaBadge: document.getElementById('roza-badge'),
       eventLabel: document.getElementById('event-label'),
+      eventSublabel: document.getElementById('event-sublabel'),
       countH: document.getElementById('countdown-h'),
       countM: document.getElementById('countdown-m'),
       countS: document.getElementById('countdown-s'),
@@ -256,6 +260,10 @@
       return date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
     }
 
+    function formatDisplayDateShort(date) {
+      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    }
+
     function padZero(num) {
       return String(num).padStart(2, '0');
     }
@@ -274,17 +282,17 @@
     function renderTimetable(currentDayNumber) {
       let html = '';
       ramadanData.forEach(dayData => {
-        const isToday = currentDayNumber === dayData.day;
+        const isActive = currentDayNumber === dayData.day;
         const dateObj = new Date(`${dayData.date}T00:00:00`);
-        const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        const formattedDate = formatDisplayDateShort(dateObj);
         
-        const containerClasses = isToday 
+        const containerClasses = isActive 
           ? 'bg-amber-950/30 border-amber-500/50 shadow-[0_0_15px_rgba(245,158,11,0.1)]' 
           : 'bg-slate-800/40 border-slate-700/50 hover:bg-slate-800';
           
-        const circleClasses = isToday ? 'bg-amber-500 text-slate-900' : 'bg-slate-700 text-slate-300';
-        const textClasses = isToday ? 'text-amber-400' : 'text-slate-200';
-        const timeClasses = isToday ? 'text-white font-semibold' : 'text-slate-300';
+        const circleClasses = isActive ? 'bg-amber-500 text-slate-900' : 'bg-slate-700 text-slate-300';
+        const textClasses = isActive ? 'text-amber-400' : 'text-slate-200';
+        const timeClasses = isActive ? 'text-white font-semibold' : 'text-slate-300';
 
         html += `
           <div class="flex items-center justify-between p-4 rounded-2xl border transition-all ${containerClasses}">
@@ -330,42 +338,54 @@
         return;
       }
 
-      // Find current day based on local date
+      // Find initial current day based on local date
       const todayStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
-      let todayDataIndex = ramadanData.findIndex(d => d.date === todayStr);
+      let activeDataIndex = ramadanData.findIndex(d => d.date === todayStr);
 
-      if (todayDataIndex === -1) {
+      if (activeDataIndex === -1) {
         setView('after');
         return;
       }
 
-      const todayData = ramadanData[todayDataIndex];
-      const sehrTime = parseTimeStr(todayData.date, todayData.sehr, false);
-      const iftarTime = parseTimeStr(todayData.date, todayData.iftar, true);
+      let activeData = ramadanData[activeDataIndex];
+      let sehrTime = parseTimeStr(activeData.date, activeData.sehr, false);
+      let iftarTime = parseTimeStr(activeData.date, activeData.iftar, true);
 
-      // Update UI elements for today
-      els.rozaBadgeContainer.classList.remove('hidden');
-      els.rozaBadge.innerText = `Roza ${todayData.day}`;
-      els.todayGrid.classList.remove('hidden');
-      els.sehrTime.innerText = todayData.sehr;
-      els.iftarTime.innerText = todayData.iftar;
-
-      let nextEvent = null;
-
-      if (now < sehrTime) {
-        nextEvent = { time: sehrTime, label: 'Sehr Ends In' };
-      } else if (now < iftarTime) {
-        nextEvent = { time: iftarTime, label: 'Iftar Begins In' };
-      } else {
-        // Look for tomorrow
-        if (todayDataIndex + 1 < ramadanData.length) {
-          const tomorrowData = ramadanData[todayDataIndex + 1];
-          const tmrwSehrTime = parseTimeStr(tomorrowData.date, tomorrowData.sehr, false);
-          nextEvent = { time: tmrwSehrTime, label: 'Next Sehr In' };
+      // Adaptable Logic: If today's iftar has passed, smoothly switch focus to Tomorrow's Roza!
+      if (now > iftarTime) {
+        if (activeDataIndex + 1 < ramadanData.length) {
+          activeDataIndex++;
+          activeData = ramadanData[activeDataIndex];
+          sehrTime = parseTimeStr(activeData.date, activeData.sehr, false);
+          iftarTime = parseTimeStr(activeData.date, activeData.iftar, true);
         } else {
           setView('after');
           return;
         }
+      }
+
+      // Update UI elements for the currently active target day
+      els.rozaBadgeContainer.classList.remove('hidden');
+      els.rozaBadge.innerText = `Roza ${activeData.day}`;
+      els.todayGrid.classList.remove('hidden');
+      els.sehrTime.innerText = activeData.sehr;
+      els.iftarTime.innerText = activeData.iftar;
+
+      let nextEvent = null;
+
+      if (now < sehrTime) {
+        nextEvent = { 
+          time: sehrTime, 
+          label: `Roza ${activeData.day} Sehr Ends In`,
+          subLabel: `At ${activeData.sehr} AM, ${formatDisplayDateShort(sehrTime)}`
+        };
+      } else {
+        // Between Sehr and Iftar
+        nextEvent = { 
+          time: iftarTime, 
+          label: `Roza ${activeData.day} Iftar In`,
+          subLabel: `At ${activeData.iftar} PM, ${formatDisplayDateShort(iftarTime)}`
+        };
       }
 
       // Calculate Difference
@@ -374,14 +394,16 @@
       const m = Math.floor((diffMs / 1000 / 60) % 60);
       const s = Math.floor((diffMs / 1000) % 60);
 
-      // Render countdown
+      // Render countdown text
       setView('during');
       els.eventLabel.innerText = nextEvent.label;
+      els.eventSublabel.innerText = nextEvent.subLabel;
       els.countH.innerText = padZero(h);
       els.countM.innerText = padZero(m);
       els.countS.innerText = padZero(s);
 
-      renderTimetable(todayData.day);
+      // Render Timetable (highlights the active day)
+      renderTimetable(activeData.day);
     }
 
     // Tab Navigation Logic
