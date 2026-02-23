@@ -51,7 +51,7 @@
   <div class="w-full max-w-md bg-slate-900 shadow-2xl relative flex flex-col h-screen overflow-hidden sm:rounded-3xl sm:h-[95vh] sm:my-auto sm:border sm:border-slate-800">
     
     <!-- Header -->
-    <header class="px-5 pt-10 pb-5 bg-gradient-to-b from-slate-800/80 to-slate-900 flex items-center justify-between relative z-10 border-b border-slate-800">
+    <header class="px-5 pt-10 pb-5 bg-gradient-to-b from-slate-800/80 to-slate-900 flex items-center justify-between relative z-50 border-b border-slate-800">
       
       <!-- Logo and Title -->
       <div class="flex items-center gap-3">
@@ -71,15 +71,20 @@
         </div>
       </div>
 
-      <!-- City Selector UI -->
+      <!-- City Selector UI (Searchable Dropdown) -->
       <div class="relative flex flex-col items-end">
-        <div class="relative group">
-          <select id="city-selector" class="bg-slate-800/80 backdrop-blur-md text-slate-200 border border-slate-700/80 rounded-xl pl-3 pr-8 py-1.5 text-xs font-semibold tracking-wide outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50 appearance-none cursor-pointer shadow-inner transition-all hover:bg-slate-700">
-            <option value="">Loading...</option>
-          </select>
-          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-amber-500 group-hover:text-amber-400 transition-colors">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+        <div class="relative w-36 sm:w-44">
+          <input type="text" id="city-search" placeholder="Search city..." autocomplete="off" 
+                 class="w-full bg-slate-800/80 backdrop-blur-md text-slate-200 border border-slate-700/80 rounded-xl pl-3 pr-8 py-1.5 text-xs font-semibold tracking-wide outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50 shadow-inner transition-all hover:bg-slate-700 placeholder-slate-500 cursor-text">
+          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-amber-500">
+            <!-- Search Icon -->
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
           </div>
+          
+          <!-- Dropdown List -->
+          <ul id="city-dropdown" class="absolute right-0 top-full mt-2 w-52 max-h-60 overflow-y-auto bg-slate-800 border border-slate-700 rounded-xl shadow-2xl hidden flex-col divide-y divide-slate-700/50 hide-scrollbar z-50">
+            <!-- Dynamically injected cities -->
+          </ul>
         </div>
       </div>
 
@@ -188,7 +193,7 @@
     </main>
 
     <!-- Bottom Navigation -->
-    <nav class="absolute bottom-0 w-full bg-slate-900/90 backdrop-blur-xl border-t border-slate-800/80 px-6 py-4 flex justify-around pb-safe">
+    <nav class="absolute bottom-0 w-full bg-slate-900/90 backdrop-blur-xl border-t border-slate-800/80 px-6 py-4 flex justify-around pb-safe z-40">
       <button id="nav-home" onclick="switchTab('home')" class="flex flex-col items-center gap-1.5 transition-colors text-amber-400">
         <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
@@ -211,6 +216,8 @@
     let allCitiesData = {};
     let currentRamadanData = [];
     let timerInterval = null;
+    let sortedCities = [];
+    let currentSelectedCity = "";
 
     // DOM Elements
     const views = {
@@ -221,7 +228,8 @@
     };
 
     const els = {
-      citySelector: document.getElementById('city-selector'),
+      citySearch: document.getElementById('city-search'),
+      cityDropdown: document.getElementById('city-dropdown'),
       displayDate: document.getElementById('display-date'),
       rozaBadgeContainer: document.getElementById('roza-badge-container'),
       rozaBadge: document.getElementById('roza-badge'),
@@ -255,38 +263,83 @@
     }
 
     function setupCitySelector() {
-      const cities = Object.keys(allCitiesData);
+      // 1. Sort cities A to Z
+      sortedCities = Object.keys(allCitiesData).sort();
       
-      // Clear loading option
-      els.citySelector.innerHTML = '';
-
-      // Populate Options
-      cities.forEach(city => {
-        const option = document.createElement('option');
-        option.value = city;
-        option.innerText = city;
-        els.citySelector.appendChild(option);
-      });
-
-      // Load from memory or default to first
+      // 2. Load from memory or default to first A-Z city
       const savedCity = localStorage.getItem('roza_siyam_city');
       if (savedCity && allCitiesData[savedCity]) {
-        els.citySelector.value = savedCity;
-        currentRamadanData = allCitiesData[savedCity];
+        currentSelectedCity = savedCity;
       } else {
-        els.citySelector.value = cities[0];
-        currentRamadanData = allCitiesData[cities[0]];
+        currentSelectedCity = sortedCities[0];
+      }
+      
+      currentRamadanData = allCitiesData[currentSelectedCity];
+      els.citySearch.value = currentSelectedCity;
+
+      // 3. Render initial dropdown items
+      renderDropdown("");
+
+      // 4. Setup Event Listeners for Search Bar
+      els.citySearch.addEventListener('focus', () => {
+        els.citySearch.value = ''; // Clear input so user can type
+        els.cityDropdown.classList.remove('hidden');
+        renderDropdown("");
+      });
+
+      els.citySearch.addEventListener('input', (e) => {
+        renderDropdown(e.target.value);
+      });
+
+      // 5. Hide dropdown when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!els.citySearch.contains(e.target) && !els.cityDropdown.contains(e.target)) {
+          els.cityDropdown.classList.add('hidden');
+          // Revert the text back to the currently selected city
+          els.citySearch.value = currentSelectedCity;
+        }
+      });
+    }
+
+    function renderDropdown(filterText) {
+      const lowerFilter = filterText.toLowerCase();
+      const filtered = sortedCities.filter(city => city.toLowerCase().includes(lowerFilter));
+      
+      els.cityDropdown.innerHTML = '';
+      
+      if (filtered.length === 0) {
+        els.cityDropdown.innerHTML = '<li class="px-4 py-3 text-xs text-slate-400 text-center">No city found</li>';
+        return;
       }
 
-      // Add Change Listener
-      els.citySelector.addEventListener('change', (e) => {
-        const selectedCity = e.target.value;
-        currentRamadanData = allCitiesData[selectedCity];
-        localStorage.setItem('roza_siyam_city', selectedCity);
+      filtered.forEach(city => {
+        const li = document.createElement('li');
+        li.className = 'px-4 py-2.5 text-xs text-slate-200 hover:bg-slate-700 cursor-pointer transition-colors';
         
-        // Force immediate UI recalculation
-        updateTimer();
+        // Highlight active city
+        if (city === currentSelectedCity) {
+          li.classList.add('text-amber-400', 'bg-slate-700/50', 'font-bold');
+        }
+        
+        li.innerText = city;
+        li.addEventListener('click', () => {
+          selectCity(city);
+        });
+        
+        els.cityDropdown.appendChild(li);
       });
+    }
+
+    function selectCity(cityName) {
+      currentSelectedCity = cityName;
+      currentRamadanData = allCitiesData[cityName];
+      localStorage.setItem('roza_siyam_city', cityName);
+      
+      els.citySearch.value = cityName;
+      els.cityDropdown.classList.add('hidden');
+      
+      // Immediately update countdown/timings for new city
+      updateTimer();
     }
 
     // Parse time strings to Date objects
