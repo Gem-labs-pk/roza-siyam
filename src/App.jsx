@@ -8,7 +8,7 @@ const ramadanData = [
   { day: 2, date: "2026-02-20", sehr: "05:26", iftar: "06:22" },
   { day: 3, date: "2026-02-21", sehr: "05:25", iftar: "06:23" },
   { day: 4, date: "2026-02-22", upperDate: "22", month: "Feb", dayName: "Sun", sehr: "05:24", iftar: "06:24" },
-  { day: 5, date: "2026-02-23", sehr: "05:23", iftar: "06:15" },
+  { day: 5, date: "2026-02-23", sehr: "05:23", iftar: "06:25" },
   { day: 6, date: "2026-02-24", sehr: "05:22", iftar: "06:25" },
   { day: 7, date: "2026-02-25", sehr: "05:22", iftar: "06:26" },
   { day: 8, date: "2026-02-26", sehr: "05:21", iftar: "06:27" },
@@ -25,7 +25,7 @@ const ramadanData = [
   { day: 19, date: "2026-03-09", sehr: "05:11", iftar: "06:33" },
   { day: 20, date: "2026-03-10", sehr: "05:10", iftar: "06:34" },
   { day: 21, date: "2026-03-11", sehr: "05:08", iftar: "06:35" },
-  { day: 22, date: "2026-03-12", sehr: "05:07", iftar: "06:36" },
+  { day: 22, date: "2026-03-12", plainDay: "12", sehr: "05:07", iftar: "06:36" },
   { day: 23, date: "2026-03-13", sehr: "05:06", iftar: "06:36" },
   { day: 24, date: "2026-03-14", sehr: "05:05", iftar: "06:37" },
   { day: 25, date: "2026-03-15", sehr: "05:04", iftar: "06:38" },
@@ -60,6 +60,15 @@ export default function App() {
     nextEvent: null, // { type: 'Sehr' | 'Iftar', time: Date, label: string }
     timeRemaining: { h: 0, m: 0, s: 0 }
   });
+
+  // Register Service Worker for PWA functionality
+  useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js')
+        .then(registration => console.log('PWA ServiceWorker registered successfully'))
+        .catch(error => console.log('PWA ServiceWorker registration failed:', error));
+    }
+  }, []);
 
   // Utility to convert "05:27" or "06:22" to a Date object on a specific day
   const parseTimeStr = (dateStr, timeStr, isIftar) => {
