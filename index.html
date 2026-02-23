@@ -51,25 +51,47 @@
   <div class="w-full max-w-md bg-slate-900 shadow-2xl relative flex flex-col h-screen overflow-hidden sm:rounded-3xl sm:h-[95vh] sm:my-auto sm:border sm:border-slate-800">
     
     <!-- Header -->
-    <header class="px-6 pt-10 pb-6 bg-gradient-to-b from-slate-800/80 to-slate-900 flex items-center gap-4 relative z-10">
-      <svg viewBox="0 0 100 100" class="w-12 h-12 drop-shadow-lg" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="moonGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#fde047" />
-            <stop offset="100%" stopColor="#d97706" />
-          </linearGradient>
-        </defs>
-        <path d="M50 15A35 35 0 1 0 85 50 25 25 0 1 1 50 15Z" fill="url(#moonGradient)" />
-        <polygon points="65,25 68,32 75,32 69,37 71,44 65,40 59,44 61,37 55,32 62,32" fill="#fde047" />
-      </svg>
-      <div>
-        <h1 class="text-2xl font-bold tracking-wide text-white">Roza Siyam</h1>
-        <p class="text-amber-400 text-sm font-medium tracking-wider">Ramadan 2026 • 1447 AH</p>
+    <header class="px-5 pt-10 pb-5 bg-gradient-to-b from-slate-800/80 to-slate-900 flex items-center justify-between relative z-50 border-b border-slate-800">
+      
+      <!-- Logo and Title -->
+      <div class="flex items-center gap-3">
+        <svg viewBox="0 0 100 100" class="w-10 h-10 drop-shadow-lg" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="moonGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#fde047" />
+              <stop offset="100%" stopColor="#d97706" />
+            </linearGradient>
+          </defs>
+          <path d="M50 15A35 35 0 1 0 85 50 25 25 0 1 1 50 15Z" fill="url(#moonGradient)" />
+          <polygon points="65,25 68,32 75,32 69,37 71,44 65,40 59,44 61,37 55,32 62,32" fill="#fde047" />
+        </svg>
+        <div>
+          <h1 class="text-xl font-bold tracking-wide text-white leading-tight">Roza Siyam</h1>
+          <p class="text-amber-400 text-[10px] font-medium tracking-wider uppercase">Ramadan 2026</p>
+        </div>
       </div>
+
+      <!-- City Selector UI (Searchable Dropdown) -->
+      <div class="relative flex flex-col items-end">
+        <div class="relative w-36 sm:w-44">
+          <input type="text" id="city-search" placeholder="Search city..." autocomplete="off" 
+                 class="w-full bg-slate-800/80 backdrop-blur-md text-slate-200 border border-slate-700/80 rounded-xl pl-3 pr-8 py-1.5 text-xs font-semibold tracking-wide outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50 shadow-inner transition-all hover:bg-slate-700 placeholder-slate-500 cursor-text">
+          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-amber-500">
+            <!-- Search Icon -->
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+          </div>
+          
+          <!-- Dropdown List -->
+          <ul id="city-dropdown" class="absolute right-0 top-full mt-2 w-52 max-h-60 overflow-y-auto bg-slate-800 border border-slate-700 rounded-xl shadow-2xl hidden flex-col divide-y divide-slate-700/50 hide-scrollbar z-50">
+            <!-- Dynamically injected cities -->
+          </ul>
+        </div>
+      </div>
+
     </header>
 
     <!-- Main Content -->
-    <main class="flex-1 overflow-y-auto pb-24 px-6 hide-scrollbar relative">
+    <main class="flex-1 overflow-y-auto pb-24 px-6 hide-scrollbar relative mt-4">
       
       <!-- HOME TAB -->
       <div id="tab-home" class="space-y-6 animate-fade-in">
@@ -90,7 +112,7 @@
           <div class="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-3xl"></div>
           
           <!-- View: Loading -->
-          <div id="view-loading" class="text-amber-200 animate-pulse text-center w-full">Calculating timings...</div>
+          <div id="view-loading" class="text-amber-200 animate-pulse text-center w-full">Fetching timings...</div>
 
           <!-- View: Before Ramadan -->
           <div id="view-before" class="hidden text-center w-full">
@@ -164,14 +186,14 @@
           </span>
         </div>
         <div id="timetable-list" class="space-y-3">
-          <!-- Populated by JavaScript -->
+          <!-- Populated dynamically -->
         </div>
       </div>
 
     </main>
 
     <!-- Bottom Navigation -->
-    <nav class="absolute bottom-0 w-full bg-slate-900/90 backdrop-blur-xl border-t border-slate-800/80 px-6 py-4 flex justify-around pb-safe">
+    <nav class="absolute bottom-0 w-full bg-slate-900/90 backdrop-blur-xl border-t border-slate-800/80 px-6 py-4 flex justify-around pb-safe z-40">
       <button id="nav-home" onclick="switchTab('home')" class="flex flex-col items-center gap-1.5 transition-colors text-amber-400">
         <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
@@ -190,39 +212,12 @@
 
   <!-- Application Logic -->
   <script>
-    // Updated data: Sehr from 05:27 column, Iftar from 06:12 column
-    const ramadanData = [
-      { day: 1, date: "2026-02-19", sehr: "05:27", iftar: "06:12" },
-      { day: 2, date: "2026-02-20", sehr: "05:26", iftar: "06:12" },
-      { day: 3, date: "2026-02-21", sehr: "05:25", iftar: "06:13" },
-      { day: 4, date: "2026-02-22", sehr: "05:24", iftar: "06:14" },
-      { day: 5, date: "2026-02-23", sehr: "05:23", iftar: "06:15" },
-      { day: 6, date: "2026-02-24", sehr: "05:22", iftar: "06:15" },
-      { day: 7, date: "2026-02-25", sehr: "05:22", iftar: "06:16" },
-      { day: 8, date: "2026-02-26", sehr: "05:21", iftar: "06:17" },
-      { day: 9, date: "2026-02-27", sehr: "05:20", iftar: "06:17" },
-      { day: 10, date: "2026-02-28", sehr: "05:19", iftar: "06:18" },
-      { day: 11, date: "2026-03-01", sehr: "05:18", iftar: "06:19" },
-      { day: 12, date: "2026-03-02", sehr: "05:18", iftar: "06:19" },
-      { day: 13, date: "2026-03-03", sehr: "05:17", iftar: "06:20" },
-      { day: 14, date: "2026-03-04", sehr: "05:16", iftar: "06:20" },
-      { day: 15, date: "2026-03-05", sehr: "05:15", iftar: "06:21" },
-      { day: 16, date: "2026-03-06", shortMonth: "Mar", plainDay: "06", sehr: "05:14", iftar: "06:21" },
-      { day: 17, date: "2026-03-07", sehr: "05:13", iftar: "06:22" },
-      { day: 18, date: "2026-03-08", sehr: "05:12", iftar: "06:23" },
-      { day: 19, date: "2026-03-09", sehr: "05:11", iftar: "06:23" },
-      { day: 20, date: "2026-03-10", sehr: "05:10", iftar: "06:24" },
-      { day: 21, date: "2026-03-11", sehr: "05:08", iftar: "06:25" },
-      { day: 22, date: "2026-03-12", sehr: "05:07", iftar: "06:26" },
-      { day: 23, date: "2026-03-13", sehr: "05:06", iftar: "06:26" },
-      { day: 24, date: "2026-03-14", sehr: "05:05", iftar: "06:27" },
-      { day: 25, date: "2026-03-15", sehr: "05:04", iftar: "06:28" },
-      { day: 26, date: "2026-03-16", sehr: "05:02", iftar: "06:28" },
-      { day: 27, date: "2026-03-17", sehr: "05:01", iftar: "06:29" },
-      { day: 28, date: "2026-03-18", sehr: "05:00", iftar: "06:29" },
-      { day: 29, date: "2026-03-19", sehr: "04:58", iftar: "06:30" },
-      { day: 30, date: "2026-03-20", sehr: "04:56", iftar: "06:30" },
-    ];
+    // State Management
+    let allCitiesData = {};
+    let currentRamadanData = [];
+    let timerInterval = null;
+    let sortedCities = [];
+    let currentSelectedCity = "";
 
     // DOM Elements
     const views = {
@@ -233,6 +228,8 @@
     };
 
     const els = {
+      citySearch: document.getElementById('city-search'),
+      cityDropdown: document.getElementById('city-dropdown'),
       displayDate: document.getElementById('display-date'),
       rozaBadgeContainer: document.getElementById('roza-badge-container'),
       rozaBadge: document.getElementById('roza-badge'),
@@ -246,6 +243,104 @@
       iftarTime: document.getElementById('iftar-time-display'),
       timetableList: document.getElementById('timetable-list')
     };
+
+    // Initialize App and Fetch Data
+    async function initApp() {
+      try {
+        const response = await fetch('cities.json');
+        if (!response.ok) throw new Error("Failed to fetch JSON");
+        allCitiesData = await response.json();
+        
+        setupCitySelector();
+        
+        // Start processing logic
+        updateTimer();
+        timerInterval = setInterval(updateTimer, 1000);
+      } catch (error) {
+        console.error("Error loading timing data:", error);
+        views.loading.innerText = "Error loading timing data. Please check connection.";
+      }
+    }
+
+    function setupCitySelector() {
+      // 1. Sort cities A to Z
+      sortedCities = Object.keys(allCitiesData).sort();
+      
+      // 2. Load from memory or default to first A-Z city
+      const savedCity = localStorage.getItem('roza_siyam_city');
+      if (savedCity && allCitiesData[savedCity]) {
+        currentSelectedCity = savedCity;
+      } else {
+        currentSelectedCity = sortedCities[0];
+      }
+      
+      currentRamadanData = allCitiesData[currentSelectedCity];
+      els.citySearch.value = currentSelectedCity;
+
+      // 3. Render initial dropdown items
+      renderDropdown("");
+
+      // 4. Setup Event Listeners for Search Bar
+      els.citySearch.addEventListener('focus', () => {
+        els.citySearch.value = ''; // Clear input so user can type
+        els.cityDropdown.classList.remove('hidden');
+        renderDropdown("");
+      });
+
+      els.citySearch.addEventListener('input', (e) => {
+        renderDropdown(e.target.value);
+      });
+
+      // 5. Hide dropdown when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!els.citySearch.contains(e.target) && !els.cityDropdown.contains(e.target)) {
+          els.cityDropdown.classList.add('hidden');
+          // Revert the text back to the currently selected city
+          els.citySearch.value = currentSelectedCity;
+        }
+      });
+    }
+
+    function renderDropdown(filterText) {
+      const lowerFilter = filterText.toLowerCase();
+      const filtered = sortedCities.filter(city => city.toLowerCase().includes(lowerFilter));
+      
+      els.cityDropdown.innerHTML = '';
+      
+      if (filtered.length === 0) {
+        els.cityDropdown.innerHTML = '<li class="px-4 py-3 text-xs text-slate-400 text-center">No city found</li>';
+        return;
+      }
+
+      filtered.forEach(city => {
+        const li = document.createElement('li');
+        li.className = 'px-4 py-2.5 text-xs text-slate-200 hover:bg-slate-700 cursor-pointer transition-colors';
+        
+        // Highlight active city
+        if (city === currentSelectedCity) {
+          li.classList.add('text-amber-400', 'bg-slate-700/50', 'font-bold');
+        }
+        
+        li.innerText = city;
+        li.addEventListener('click', () => {
+          selectCity(city);
+        });
+        
+        els.cityDropdown.appendChild(li);
+      });
+    }
+
+    function selectCity(cityName) {
+      currentSelectedCity = cityName;
+      currentRamadanData = allCitiesData[cityName];
+      localStorage.setItem('roza_siyam_city', cityName);
+      
+      els.citySearch.value = cityName;
+      els.cityDropdown.classList.add('hidden');
+      
+      // Immediately update countdown/timings for new city
+      updateTimer();
+    }
 
     // Parse time strings to Date objects
     function parseTimeStr(dateStr, timeStr, isIftar) {
@@ -280,8 +375,10 @@
 
     // Render Timetable
     function renderTimetable(currentDayNumber) {
+      if (!currentRamadanData || currentRamadanData.length === 0) return;
+
       let html = '';
-      ramadanData.forEach(dayData => {
+      currentRamadanData.forEach(dayData => {
         const isActive = currentDayNumber === dayData.day;
         const dateObj = new Date(`${dayData.date}T00:00:00`);
         const formattedDate = formatDisplayDateShort(dateObj);
@@ -320,42 +417,48 @@
 
     // Core Timer Logic
     function updateTimer() {
+      if (!currentRamadanData || currentRamadanData.length === 0) return;
+
       const now = new Date();
       els.displayDate.innerText = formatDisplayDate(now);
 
-      const firstDayDate = new Date(`${ramadanData[0].date}T00:00:00`);
-      const lastDayDate = new Date(`${ramadanData[ramadanData.length - 1].date}T23:59:59`);
+      const firstDayDate = new Date(`${currentRamadanData[0].date}T00:00:00`);
+      const lastDayDate = new Date(`${currentRamadanData[currentRamadanData.length - 1].date}T23:59:59`);
 
       if (now < firstDayDate) {
         setView('before');
         renderTimetable(null);
+        els.todayGrid.classList.add('hidden');
+        els.rozaBadgeContainer.classList.add('hidden');
         return;
       }
 
       if (now > lastDayDate) {
         setView('after');
         renderTimetable(null);
+        els.todayGrid.classList.add('hidden');
+        els.rozaBadgeContainer.classList.add('hidden');
         return;
       }
 
       // Find initial current day based on local date
       const todayStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
-      let activeDataIndex = ramadanData.findIndex(d => d.date === todayStr);
+      let activeDataIndex = currentRamadanData.findIndex(d => d.date === todayStr);
 
       if (activeDataIndex === -1) {
         setView('after');
         return;
       }
 
-      let activeData = ramadanData[activeDataIndex];
+      let activeData = currentRamadanData[activeDataIndex];
       let sehrTime = parseTimeStr(activeData.date, activeData.sehr, false);
       let iftarTime = parseTimeStr(activeData.date, activeData.iftar, true);
 
       // Adaptable Logic: If today's iftar has passed, smoothly switch focus to Tomorrow's Roza!
       if (now > iftarTime) {
-        if (activeDataIndex + 1 < ramadanData.length) {
+        if (activeDataIndex + 1 < currentRamadanData.length) {
           activeDataIndex++;
-          activeData = ramadanData[activeDataIndex];
+          activeData = currentRamadanData[activeDataIndex];
           sehrTime = parseTimeStr(activeData.date, activeData.sehr, false);
           iftarTime = parseTimeStr(activeData.date, activeData.iftar, true);
         } else {
@@ -434,9 +537,8 @@
       }
     }
 
-    // Initialize Timer
-    updateTimer();
-    setInterval(updateTimer, 1000);
+    // Start App when DOM is loaded
+    document.addEventListener('DOMContentLoaded', initApp);
 
   </script>
 </body>
