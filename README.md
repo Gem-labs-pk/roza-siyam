@@ -16,7 +16,7 @@
 
 Experience Roza Siyam natively on your Android device:
 
-[**📱 Download Roza Siyam .APK**](https://github.com/gem-labs-pk/roza-siyam/releases/latest/download/RozaSiyam.apk)
+[**📱 Download Roza Siyam .APK**](https://github.com/Gem-labs-pk/roza-siyam/releases/download/Roza_Siyam/Roza.Siyam.apk)
 
 ---
 
