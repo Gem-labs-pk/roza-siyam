@@ -209,7 +209,7 @@
         <!-- Fiqa Selector -->
         <div class="bg-slate-800 border border-slate-700/50 rounded-3xl p-5">
           <h3 class="text-slate-300 font-bold text-sm mb-4 flex items-center gap-2">
-            <svg class="w-5 h-5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" /></svg>
+            <svg class="w-5 h-5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" /></svg>
             Fiqa Selection
           </h3>
           <div class="flex p-1 bg-slate-900 rounded-xl relative">
@@ -661,15 +661,27 @@
       const remainingCount = currentRamadanData.length - activeData.day + 1;
       els.remainingRozas.innerText = `${remainingCount} Left`;
 
-      // Update UI
+      // --- NEW FASTING LOGIC ---
+      // Distinguish if we are currently Fasting (between Sehr and Iftar) OR waiting for next Fast
+      const isFasting = now >= sehrTime && now < iftarTime;
+
+      // Update UI Badge
       els.rozaBadgeContainer.classList.remove('hidden');
-      els.rozaBadge.innerText = `Roza ${activeData.day}`;
+      
+      if (isFasting) {
+        els.rozaBadge.innerText = `Fasting: Roza ${activeData.day}`;
+        els.rozaBadge.className = "inline-block bg-emerald-500/20 text-emerald-400 px-3 py-1 rounded-lg text-sm font-bold border border-emerald-500/30";
+      } else {
+        els.rozaBadge.innerText = `Next: Roza ${activeData.day}`;
+        els.rozaBadge.className = "inline-block bg-amber-500/20 text-amber-400 px-3 py-1 rounded-lg text-sm font-bold border border-amber-500/30";
+      }
+
       els.todayGrid.classList.remove('hidden');
       els.sehrTime.innerText = displaySehr;
       els.iftarTime.innerText = displayIftar;
 
       let nextEvent = null;
-      if (now < sehrTime) {
+      if (!isFasting) {
         nextEvent = { 
           time: sehrTime, 
           label: `SEHR ENDS IN`,
