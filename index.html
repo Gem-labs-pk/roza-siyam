@@ -17,6 +17,11 @@
   
   <style>
     /* Global Styles & Utilities */
+    html, body {
+      overscroll-behavior-y: none; /* Crucial: Disables Chrome's native pull-to-refresh at the root */
+      overscroll-behavior-x: none;
+    }
+
     body {
       background-color: #020617; /* slate-950 */
       color: #f1f5f9;
@@ -31,7 +36,6 @@
       -webkit-touch-callout: none; /* Disable native touch callout/menus */
       user-select: none; /* Disable text selection */
       -webkit-user-select: none;
-      overscroll-behavior-y: none; /* Prevent pull-to-refresh */
     }
 
     /* Keep input fields selectable so typing works */
@@ -97,7 +101,8 @@
     </header>
 
     <!-- Main Scrollable Content -->
-    <main class="flex-1 overflow-y-auto pb-32 px-6 hide-scrollbar relative">
+    <!-- Added overscroll-y-contain to trap vertical scrolling inside this container without triggering browser reload -->
+    <main class="flex-1 overflow-y-auto overscroll-y-contain pb-32 px-6 hide-scrollbar relative">
       
       <!-- ==================== HOME TAB ==================== -->
       <div id="tab-home" class="space-y-5 animate-slide-up">
