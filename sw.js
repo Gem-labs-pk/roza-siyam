@@ -1,4 +1,4 @@
-const CACHE_NAME = 'roza-siyam-pwa-v1.2';
+const CACHE_NAME = 'roza-siyam-pwa-v1.3';
 const ASSETS = [
     './',
     './index.html',
