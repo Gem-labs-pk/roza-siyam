@@ -25,7 +25,19 @@
       display: flex;
       justify-content: center;
       min-height: 100vh;
+      
+      /* Mobile App native feel fixes */
       -webkit-tap-highlight-color: transparent; /* Remove tap highlights */
+      -webkit-touch-callout: none; /* Disable native touch callout/menus */
+      user-select: none; /* Disable text selection */
+      -webkit-user-select: none;
+      overscroll-behavior-y: none; /* Prevent pull-to-refresh */
+    }
+
+    /* Keep input fields selectable so typing works */
+    input {
+      user-select: auto;
+      -webkit-user-select: auto;
     }
 
     .hide-scrollbar::-webkit-scrollbar { display: none; }
@@ -48,7 +60,7 @@
     .touch-btn:active { transform: scale(0.95); transition: transform 0.1s; }
   </style>
 </head>
-<body class="antialiased selection:bg-amber-500/30">
+<body class="antialiased">
 
   <!-- Mobile App Container -->
   <div class="w-full max-w-md bg-slate-900 shadow-2xl relative flex flex-col h-screen overflow-hidden sm:rounded-[2.5rem] sm:h-[95vh] sm:my-auto sm:border-[6px] sm:border-slate-800">
@@ -85,7 +97,6 @@
     </header>
 
     <!-- Main Scrollable Content -->
-    <!-- Increased pb-32 to account for floating nav -->
     <main class="flex-1 overflow-y-auto pb-32 px-6 hide-scrollbar relative">
       
       <!-- ==================== HOME TAB ==================== -->
@@ -105,7 +116,7 @@
         </div>
 
         <!-- Dynamic Countdown Card -->
-        <div class="bg-gradient-to-br from-amber-500/10 via-slate-800 to-slate-800 border border-slate-700/60 rounded-[2rem] p-8 flex flex-col items-center justify-center relative overflow-hidden shadow-xl min-h-[260px]">
+        <div class="bg-gradient-to-br from-amber-500/10 via-slate-800 to-slate-800 border border-slate-700/60 rounded-[2rem] p-6 sm:p-8 flex flex-col items-center justify-center relative overflow-hidden shadow-xl min-h-[260px]">
           <!-- Glow effect -->
           <div class="absolute top-0 right-0 w-40 h-40 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
           
@@ -125,19 +136,20 @@
             <p id="event-label" class="text-slate-300 font-semibold tracking-wide text-sm mb-1">--</p>
             <p id="event-sublabel" class="text-amber-400/60 text-xs font-medium tracking-wider mb-6">--</p>
             
-            <div class="flex items-center justify-center gap-3 font-mono text-5xl font-light text-white tracking-tight tabular-nums">
+            <!-- Highly responsive timer layout -->
+            <div class="flex items-center justify-center gap-2 sm:gap-3 font-mono text-4xl sm:text-5xl font-light text-white tracking-tight tabular-nums">
               <div class="flex flex-col items-center">
-                <span id="countdown-h" class="bg-slate-900/60 w-16 h-16 flex items-center justify-center rounded-2xl shadow-inner border border-slate-700/50">00</span>
+                <span id="countdown-h" class="bg-slate-900/60 w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center rounded-2xl shadow-inner border border-slate-700/50">00</span>
                 <span class="text-[10px] font-sans text-slate-400 mt-2 uppercase tracking-widest font-semibold">Hrs</span>
               </div>
               <span class="text-slate-600 pb-6">:</span>
               <div class="flex flex-col items-center">
-                <span id="countdown-m" class="bg-slate-900/60 w-16 h-16 flex items-center justify-center rounded-2xl shadow-inner border border-slate-700/50">00</span>
+                <span id="countdown-m" class="bg-slate-900/60 w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center rounded-2xl shadow-inner border border-slate-700/50">00</span>
                 <span class="text-[10px] font-sans text-slate-400 mt-2 uppercase tracking-widest font-semibold">Min</span>
               </div>
               <span class="text-slate-600 pb-6">:</span>
               <div class="flex flex-col items-center">
-                <span id="countdown-s" class="bg-slate-900/60 w-16 h-16 flex items-center justify-center rounded-2xl shadow-inner border border-slate-700/50 text-amber-400">00</span>
+                <span id="countdown-s" class="bg-slate-900/60 w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center rounded-2xl shadow-inner border border-slate-700/50 text-amber-400">00</span>
                 <span class="text-[10px] font-sans text-amber-400/60 mt-2 uppercase tracking-widest font-semibold">Sec</span>
               </div>
             </div>
@@ -284,9 +296,13 @@
           <span class="text-slate-400 text-sm font-semibold uppercase tracking-wider">Iftar Time</span>
           <span id="modal-iftar" class="text-white font-bold text-lg">--:-- PM</span>
         </div>
+        <div class="bg-slate-900/50 rounded-2xl p-4 flex justify-between items-center border border-amber-900/40">
+          <span class="text-amber-500/80 text-sm font-semibold uppercase tracking-wider">Total Duration</span>
+          <span id="modal-duration" class="text-amber-400 font-bold text-lg">--</span>
+        </div>
         <div class="bg-slate-900/50 rounded-2xl p-4 flex justify-between items-center border border-slate-700/50">
           <span class="text-slate-400 text-sm font-semibold uppercase tracking-wider">Fiqa</span>
-          <span id="modal-fiqa" class="text-amber-400 font-bold text-sm capitalize">--</span>
+          <span id="modal-fiqa" class="text-slate-300 font-bold text-sm capitalize">--</span>
         </div>
       </div>
     </div>
@@ -332,6 +348,9 @@
 
     // Initialize App
     async function initApp() {
+      // Set initial history state
+      history.replaceState({ tab: 'home', modal: false }, '');
+      
       applyFiqaUI(currentFiqa);
       
       try {
@@ -340,7 +359,6 @@
         allCitiesData = await response.json();
       } catch (error) {
         console.warn("Could not load cities.json. Loading fallback dummy data.");
-        // Fallback data for preview/standalone purposes
         allCitiesData = generateDummyData(); 
       }
       
@@ -486,7 +504,7 @@
       });
     }
 
-    // Modal Logic
+    // Modal & History Logic
     function openDayModal(dayIndex) {
       const dayData = currentRamadanData[dayIndex];
       const dateObj = new Date(`${dayData.date}T00:00:00`);
@@ -494,17 +512,54 @@
       document.getElementById('modal-badge').innerText = `Roza ${dayData.day}`;
       document.getElementById('modal-date').innerText = dateObj.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
       
-      // Apply Fiqa specific times for Modal
-      document.getElementById('modal-sehr').innerText = getAdjustedTime(dayData.sehr, false) + " AM";
-      document.getElementById('modal-iftar').innerText = getAdjustedTime(dayData.iftar, true) + " PM";
+      // Calculate parsed datetimes for accurate Duration calculation
+      const finalSehrTime = getAdjustedTime(dayData.sehr, false);
+      const finalIftarTime = getAdjustedTime(dayData.iftar, true);
+      
+      const parsedSehrDate = parseTimeStr(dayData.date, finalSehrTime, false);
+      const parsedIftarDate = parseTimeStr(dayData.date, finalIftarTime, true);
+      
+      // Compute Duration
+      const diffMs = parsedIftarDate - parsedSehrDate;
+      const hours = Math.floor(diffMs / (1000 * 60 * 60));
+      const mins = Math.floor((diffMs / (1000 * 60)) % 60);
+
+      document.getElementById('modal-sehr').innerText = finalSehrTime + " AM";
+      document.getElementById('modal-iftar').innerText = finalIftarTime + " PM";
+      document.getElementById('modal-duration').innerText = `${hours}h ${mins}m`;
       document.getElementById('modal-fiqa').innerText = currentFiqa;
 
+      // Push history state to intercept physical Back Button
+      history.pushState({ tab: 'timetable', modal: true }, '');
       document.getElementById('day-modal').classList.remove('hidden');
     }
 
     function closeModal() {
-      document.getElementById('day-modal').classList.add('hidden');
+      // If we got here through user click, and history state knows the modal is open, use browser back to clean up state
+      if (history.state && history.state.modal) {
+        history.back(); // popstate listener will handle hiding
+      } else {
+        document.getElementById('day-modal').classList.add('hidden');
+      }
     }
+
+    // Intercept physical Back Button (or swipe)
+    window.addEventListener('popstate', (e) => {
+      const state = e.state;
+      if (!state) return;
+      
+      // Handle Modal visibility based on state
+      if (state.modal) {
+        document.getElementById('day-modal').classList.remove('hidden');
+      } else {
+        document.getElementById('day-modal').classList.add('hidden');
+      }
+      
+      // Handle Tab navigation based on state
+      if (state.tab) {
+        switchTab(state.tab, true);
+      }
+    });
 
     // Render Timetable
     function renderTimetable(activeDayNumber) {
@@ -644,7 +699,11 @@
     }
 
     // Tabs Nav
-    function switchTab(tabId) {
+    function switchTab(tabId, fromHistory = false) {
+      if (!fromHistory && history.state && history.state.tab !== tabId) {
+        history.pushState({ tab: tabId, modal: false }, '');
+      }
+
       ['home', 'timetable', 'settings'].forEach(id => {
         const tab = document.getElementById(`tab-${id}`);
         const nav = document.getElementById(`nav-${id}`);
